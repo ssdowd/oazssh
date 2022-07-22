@@ -6,7 +6,7 @@ Functions for using ssh into Azure VMs.
 
 ```
 git clone 
-git clone git@github.com:ssdowd/oazssh.git ~/tmp/omz/custom/plugins/oazssh
+git clone git@github.com:ssdowd/oazssh.git ~/.oh-my-zsh/custom/plugins/oazssh
 ```
 
 Then add `oazssh` to your OMZ plugin list in your ~/.zshrc:
