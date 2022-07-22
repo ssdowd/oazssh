@@ -2,6 +2,19 @@
 
 Functions for using ssh into Azure VMs.
 
+## Install
+
+```
+git clone 
+git clone git@github.com:ssdowd/oazssh.git ~/tmp/omz/custom/plugins/oazssh
+```
+
+Then add `oazssh` to your OMZ plugin list in your ~/.zshrc:
+
+```
+plugins=(docker ... oazssh)
+```
+
 O'R functions:
 
 ## oazssh - ssh connection - uses your ~/.ssh/id_rsa key.
