@@ -21,9 +21,9 @@ git clone https://github.com/Pilaton/OhMyZsh-full-autoupdate.git ${ZSH_CUSTOM:-~
 plugins=(... ohmyzsh-full-autoupdate)
 ```
 
-O'R functions:
+## oazssh - Open an ssh connection
 
-## oazssh - ssh connection - uses your ~/.ssh/id_rsa key.
+Open an ssh connection to an azure linux VM.
 
 Usage: `oazssh [-e <env>] [-k keyfile] [-s srv || -S servername]`
 
@@ -38,6 +38,8 @@ oazssh -e dev -s ap0
 Connects to the app-0 host in the dev environment.
 
 ## oazssht - ssh tunnel
+
+Start an ssh (or other) tunnel via the bastion.
 
 Usage: `oazssht [-e <env>] [-k keyfile] [-s srv || -S servername][ -w | -l] [-l local_port] [-r remote_port]`
 
@@ -62,7 +64,7 @@ Then use your RDP client to connect to localhost.
 
 ## Retrieve a password from keyvault
 
-Example to retrieve the admin_user password for dev:
+This command shows how to copy a value from the key vault to use (for RDP connections).  This retrieves the password for dev:
 
 ```
 az keyvault secret show \

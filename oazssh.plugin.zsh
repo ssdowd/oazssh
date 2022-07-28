@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.1.4"
+export OAZSSH_VERSION="0.1.5"
 
 # O'R:
 function oazssh() {
@@ -58,7 +58,7 @@ function oazssh() {
     esac
   BASTION=bas-cus-ss-infra-bastion-1
   BASTIONRG=rg-cus-ss-infra-network-1
-  SUBSCRIPTION=$(az account show | jq -r '.id')
+  SUBSCRIPTION=$(az account show --query 'id' --output tsv)
   az network bastion ssh --name ${BASTION} \
       --resource-group ${BASTIONRG} \
       --subscription "SharedServices" \
@@ -132,7 +132,7 @@ function oazssht() {
     esac
   BASTION=bas-cus-ss-infra-bastion-1
   BASTIONRG=rg-cus-ss-infra-network-1
-  SUBSCRIPTION=$(az account show | jq -r '.id')
+  SUBSCRIPTION=$(az account show --query 'id' --output tsv)
   set -x
   az network bastion tunnel --name ${BASTION} \
       --resource-group ${BASTIONRG} \
@@ -144,7 +144,6 @@ function oazssht() {
 
 # Nex Azure:
 function nazssh() {
-    echo hello
    az network bastion ssh --name ${AZENV}-bastion \
        --resource-group ${AZENV}-rg \
        --target-resource-id /subscriptions/896d2235-478d-430b-9c29-3b413342962e/resourceGroups/${AZENV}-rg/providers/Microsoft.Compute/virtualMachines/${AZENV}-$1 \
