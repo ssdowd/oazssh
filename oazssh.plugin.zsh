@@ -58,7 +58,7 @@ function oazssh() {
   BASTION=bas-cus-ss-infra-bastion-1
   BASTIONRG=rg-cus-ss-infra-network-1
   SUBSCRIPTION=$(az account show | jq -r '.id')
-  echo az network bastion ssh --name ${BASTION} \
+  az network bastion ssh --name ${BASTION} \
       --resource-group ${BASTIONRG} \
       --subscription "SharedServices" \
       --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
