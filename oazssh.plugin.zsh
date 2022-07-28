@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.1.3"
+export OAZSSH_VERSION="0.1.4"
 
 # O'R:
 function oazssh() {
@@ -17,6 +17,7 @@ function oazssh() {
         case "${o}" in
             e)
                 env_val="${OPTARG}"
+                ev=$(echo ${env_val} | cut -c1)
                 ;;
             k)
                 key_val="${OPTARG}"
@@ -42,7 +43,7 @@ function oazssh() {
       # echo "server name is .${server_name}."
     else
       server_name="az1${ev}lepcmepc${srv_val}"
-      echo "server name set to ${server_name}"
+      # echo "server name set to ${server_name}"
     fi
     case ${env_val} in
         d*)
