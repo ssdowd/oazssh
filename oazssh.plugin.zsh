@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.1.5"
+export OAZSSH_VERSION="0.1.6"
 
 # O'R:
 function oazssh() {
@@ -37,6 +37,15 @@ function oazssh() {
     done
     shift $((OPTIND-1))
 
+    case ${env_val} in
+        d*)
+          VMRG=rg-cus-nprod-dev-stibo-app-1
+          ;;
+        t*)
+          VMRG=rg-cus-nprod-test-stibo-app-1
+          ;;
+        perf)
+    esac
     if (( ${change_srv_name} )) ; then
       :
       # echo "server_name supplied in args"
@@ -45,27 +54,16 @@ function oazssh() {
       server_name="az1${ev}lepcmepc${srv_val}"
       # echo "server name set to ${server_name}"
     fi
-    case ${env_val} in
-        d*)
-          VMRG=rg-cus-nprod-dev-stibo-app-1
-          env_Val=d
-          ;;
-        t*)
-          VMRG=rg-cus-nprod-test-stibo-app-1
-          env_val=t
-          ;;
-        perf)
-    esac
-  BASTION=bas-cus-ss-infra-bastion-1
-  BASTIONRG=rg-cus-ss-infra-network-1
-  SUBSCRIPTION=$(az account show --query 'id' --output tsv)
-  az network bastion ssh --name ${BASTION} \
-      --resource-group ${BASTIONRG} \
-      --subscription "SharedServices" \
-      --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
-      --auth-type ssh-key \
-      --username adminuser \
-      --ssh-key ${key_val}
+    BASTION=bas-cus-ss-infra-bastion-1
+    BASTIONRG=rg-cus-ss-infra-network-1
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
+    az network bastion ssh --name ${BASTION} \
+        --resource-group ${BASTIONRG} \
+        --subscription "SharedServices" \
+        --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
+        --auth-type ssh-key \
+        --username adminuser \
+        --ssh-key ${key_val}
 }
 
 function oazssht() {
@@ -86,6 +84,7 @@ function oazssht() {
         case "${o}" in
             e)
                 env_val="${OPTARG}"
+                ev=$(echo ${env_val} | cut -c1)
                 ;;
             k)
                 key_val="${OPTARG}"
@@ -119,14 +118,12 @@ function oazssht() {
       server_name="az1${ev}lepcmepc${srv_val}"
       echo "server name set to ${server_name}"
     fi
-    case ${ev} in
+    case ${env_val} in
         d*)
           VMRG=rg-cus-nprod-dev-stibo-app-1
-          ev=d
           ;;
         t*)
           VMRG=rg-cus-nprod-test-stibo-app-1
-          ev=t
           ;;
         perf)
     esac
