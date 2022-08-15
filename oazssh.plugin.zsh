@@ -1,23 +1,26 @@
 # Functions:
-export OAZSSH_VERSION="0.1.6"
+export OAZSSH_VERSION="0.2.0"
 
 # O'R:
 function oazssh() {
     oazssh_usage() { 
-        echo "Usage: oazssh [-e <env>] [-k keyfile] [-s srv || -S servername]" 1>&2; return
+        echo "Usage: oazssh [-v] [-e <env>] [-k keyfile] [-s srv || -S servername]" 1>&2; return
     }
 
-    local OPTIND env_val key_val srv_val lport_val rport_val change_srv_name
+    local OPTIND env_val key_val srv_val lport_val rport_val change_srv_name VERBOSE
+    VERBOSE=0
     env_val=dev
     key_val=$HOME/.ssh/id_rsa
     srv_val=ap0
     server_name=
     change_srv_name=0
-    while getopts "e:k:s:S:l:r:" o; do
+    while getopts "ve:k:s:S:l:r:" o; do
         case "${o}" in
+            v)
+                VERBOSE=1
+                ;;
             e)
                 env_val="${OPTARG}"
-                ev=$(echo ${env_val} | cut -c1)
                 ;;
             k)
                 key_val="${OPTARG}"
@@ -40,25 +43,38 @@ function oazssh() {
     case ${env_val} in
         d*)
           VMRG=rg-cus-nprod-dev-stibo-app-1
+          ev="d"
           ;;
-        t*)
+        t*|u*)
           VMRG=rg-cus-nprod-test-stibo-app-1
+          ev="t"
           ;;
-	q*)
+        q*)
           VMRG=rg-cus-nprod-qa-stibo-app-1
-	  ;;
-        perf)
+          ev="q"
+          ;;
+        x*)
+          VMRG=rg-cus-nprod-infra-platform-1
+          ev="x"
+          ;;
+        pe*)
+          ;;
+        pr*)
+          ;;
     esac
     if (( ${change_srv_name} )) ; then
-      :
-      # echo "server_name supplied in args"
-      # echo "server name is .${server_name}."
+        :
+        # echo "server_name supplied in args"
+        # echo "server name is .${server_name}."
     else
-      server_name="az1${ev}lepcmepc${srv_val}"
-      # echo "server name set to ${server_name}"
+        server_name="az1${ev}lepcmepc${srv_val}"
+        # echo "server name set to ${server_name}"
     fi
     BASTION=bas-cus-ss-infra-bastion-1
     BASTIONRG=rg-cus-ss-infra-network-1
+    if (( ${VERBOSE} > 0 )); then
+        set -x
+    fi
     SUBSCRIPTION=$(az account show --query 'id' --output tsv)
     az network bastion ssh --name ${BASTION} \
         --resource-group ${BASTIONRG} \
@@ -72,10 +88,11 @@ function oazssh() {
 function oazssht() {
     oazssht_usage() { 
         echo "Usage: oazssht [-e <env>] [-k keyfile] [-s srv || -S servername][ -w | -l]" 1>&2; 
-        echo "               [-l local_port] [-r remote_port]"
+        echo "               [-v] [-l local_port] [-r remote_port]"
     }
 
-    local OPTIND env_val key_val srv_val lport_val rport_val change_srv_name
+    local OPTIND env_val key_val srv_val lport_val rport_val change_srv_name VERBOSE
+    VERBOSE=0
     env_val=dev
     key_val=$HOME/.ssh/id_rsa
     srv_val=ap0
@@ -83,11 +100,13 @@ function oazssht() {
     rport_val=22
     server_name=
     change_srv_name=0
-    while getopts "e:k:s:S:l:r:" o; do
+    while getopts "ve:k:s:S:l:r:" o; do
         case "${o}" in
+            v)
+                VERBOSE=1
+                ;;
             e)
                 env_val="${OPTARG}"
-                ev=$(echo ${env_val} | cut -c1)
                 ;;
             k)
                 key_val="${OPTARG}"
@@ -114,35 +133,48 @@ function oazssht() {
     shift $((OPTIND-1))
 
     if (( ${change_srv_name} )) ; then
-      :
-      # echo "server_name supplied in args"
-      # echo "server name is .${server_name}."
+        :
+        # echo "server_name supplied in args"
+        # echo "server name is .${server_name}."
     else
-      server_name="az1${ev}lepcmepc${srv_val}"
-      echo "server name set to ${server_name}"
+        server_name="az1${ev}lepcmepc${srv_val}"
+        echo "server name set to ${server_name}"
     fi
     case ${env_val} in
         d*)
-          VMRG=rg-cus-nprod-dev-stibo-app-1
+            VMRG=rg-cus-nprod-dev-stibo-app-1
+            ev="d"
+            ;;
+        t*|u*)
+            VMRG=rg-cus-nprod-test-stibo-app-1
+            ev="t"
+            ;;
+        q*)
+            VMRG=rg-cus-nprod-qa-stibo-app-1
+            ev="q"
+            ;;
+        x*)
+          VMRG=rg-cus-nprod-infra-platform-1
+          ev="x"
           ;;
-        t*)
-          VMRG=rg-cus-nprod-test-stibo-app-1
-          ;;
-	q*)
-	  VMRG=rg-cus-nprod-qa-stibo-app-1
-	  ;;
-        perf)
+        pe*)
+            ;;
+        pr*)
+            ;;
     esac
-  BASTION=bas-cus-ss-infra-bastion-1
-  BASTIONRG=rg-cus-ss-infra-network-1
-  SUBSCRIPTION=$(az account show --query 'id' --output tsv)
-  set -x
-  az network bastion tunnel --name ${BASTION} \
-      --resource-group ${BASTIONRG} \
-      --subscription "SharedServices" \
-      --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
-      --resource-port ${rport_val} \
-      --port ${lport_val}
+    BASTION=bas-cus-ss-infra-bastion-1
+    BASTIONRG=rg-cus-ss-infra-network-1
+    if (( ${VERBOSE} > 0 )); then
+        set -x
+    fi
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
+    set -x
+    az network bastion tunnel --name ${BASTION} \
+        --resource-group ${BASTIONRG} \
+        --subscription "SharedServices" \
+        --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
+        --resource-port ${rport_val} \
+        --port ${lport_val}
 }
 
 # Nex Azure:
