@@ -44,6 +44,9 @@ function oazssh() {
         t*)
           VMRG=rg-cus-nprod-test-stibo-app-1
           ;;
+	q*)
+          VMRG=rg-cus-nprod-qa-stibo-app-1
+	  ;;
         perf)
     esac
     if (( ${change_srv_name} )) ; then
@@ -125,6 +128,9 @@ function oazssht() {
         t*)
           VMRG=rg-cus-nprod-test-stibo-app-1
           ;;
+	q*)
+	  VMRG=rg-cus-nprod-qa-stibo-app-1
+	  ;;
         perf)
     esac
   BASTION=bas-cus-ss-infra-bastion-1
