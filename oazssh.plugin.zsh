@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.2.0"
+export OAZSSH_VERSION="0.3.0"
 
 # O'R:
 function oazssh() {
@@ -179,17 +179,19 @@ function oazssht() {
 
 # Nex Azure:
 function nazssh() {
+   SUBSCRIPTION=$(az account show --query 'id' --output tsv)
    az network bastion ssh --name ${AZENV}-bastion \
        --resource-group ${AZENV}-rg \
-       --target-resource-id /subscriptions/896d2235-478d-430b-9c29-3b413342962e/resourceGroups/${AZENV}-rg/providers/Microsoft.Compute/virtualMachines/${AZENV}-$1 \
+       --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${AZENV}-rg/providers/Microsoft.Compute/virtualMachines/${AZENV}-$1 \
        --auth-type ssh-key \
        --username adminuser \
        --ssh-key ~/.ssh/id_rsa
 }
 function nazssht() {
+   SUBSCRIPTION=$(az account show --query 'id' --output tsv)
    az network bastion tunnel --name ${AZENV}-bastion \
        --resource-group ${AZENV}-rg \
-       --target-resource-id /subscriptions/896d2235-478d-430b-9c29-3b413342962e/resourceGroups/${AZENV}-rg/providers/Microsoft.Compute/virtualMachines/${AZENV}-$1 \
+       --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${AZENV}-rg/providers/Microsoft.Compute/virtualMachines/${AZENV}-$1 \
        --resource-port 22 \
        --port 5555
 }
