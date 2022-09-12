@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.3.0"
+export OAZSSH_VERSION="0.4.0"
 
 # O'R:
 function oazssh() {
@@ -132,14 +132,6 @@ function oazssht() {
     done
     shift $((OPTIND-1))
 
-    if (( ${change_srv_name} )) ; then
-        :
-        # echo "server_name supplied in args"
-        # echo "server name is .${server_name}."
-    else
-        server_name="az1${ev}lepcmepc${srv_val}"
-        echo "server name set to ${server_name}"
-    fi
     case ${env_val} in
         d*)
             VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -162,6 +154,14 @@ function oazssht() {
         pr*)
             ;;
     esac
+    if (( ${change_srv_name} )) ; then
+        :
+        # echo "server_name supplied in args"
+        # echo "server name is .${server_name}."
+    else
+        server_name="az1${ev}lepcmepc${srv_val}"
+        echo "server name set to ${server_name}"
+    fi
     BASTION=bas-cus-ss-infra-bastion-1
     BASTIONRG=rg-cus-ss-infra-network-1
     if (( ${VERBOSE} > 0 )); then
