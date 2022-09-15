@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.4.0"
+export OAZSSH_VERSION="0.5.0"
 
 # O'R:
 function oazssh() {
