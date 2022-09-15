@@ -58,6 +58,12 @@ function oazssh() {
           ev="x"
           ;;
         pe*)
+          VMRG=rg-cus-nprod-perf-stibo-app-1
+          ev="r"
+          ;;
+        au*)
+          VMRG=rg-cus-nprod-devops-stibo-app-1
+          ev="a"
           ;;
         pr*)
           ;;
@@ -150,7 +156,13 @@ function oazssht() {
           ev="x"
           ;;
         pe*)
-            ;;
+ 	  VMRG=rg-cus-nprod-perf-stibo-app-1
+	  ev="r"
+	  ;;
+        au*)
+          VMRG=rg-cus-nprod-devops-stibo-app-1
+          ev="a"
+          ;;
         pr*)
             ;;
     esac
