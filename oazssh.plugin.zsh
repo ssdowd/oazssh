@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.5.0"
+export OAZSSH_VERSION="0.6.0"
 
 # O'R:
 function oazssh() {
@@ -81,7 +81,7 @@ function oazssh() {
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
-    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr --delete '[\r\n]')
     az network bastion ssh --name ${BASTION} \
         --resource-group ${BASTIONRG} \
         --subscription "SharedServices" \
@@ -179,7 +179,7 @@ function oazssht() {
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
-    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr --delete '[\r\n]')
     set -x
     az network bastion tunnel --name ${BASTION} \
         --resource-group ${BASTIONRG} \
