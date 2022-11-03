@@ -39,7 +39,7 @@ function oazssh() {
         esac
     done
     shift $((OPTIND-1))
-    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr --delete '[\r\n]')
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr -d '[\r\n]')
     case ${env_val} in
         d*)
           VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -68,12 +68,12 @@ function oazssh() {
         pr*)
           VMRG=rg-cus-prod-stibo-app-1
           ev="p"
-          SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr --delete '[\r\n]')
+          SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr -d '[\r\n]')
           ;;
         ndr*)
           VMRG=rg-eus2-nprod-perf-stibo-app-1
           ev="f"
-          SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr --delete '[\r\n]')
+          SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
           ;;
     esac
     if (( ${change_srv_name} )) ; then
