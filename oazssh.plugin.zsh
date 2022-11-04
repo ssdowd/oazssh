@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.6.0"
+export OAZSSH_VERSION="0.7.0"
 
 # O'R:
 function oazssh() {
@@ -39,7 +39,7 @@ function oazssh() {
         esac
     done
     shift $((OPTIND-1))
-
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr -d '[\r\n]')
     case ${env_val} in
         d*)
           VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -66,12 +66,23 @@ function oazssh() {
           ev="a"
           ;;
         pr*)
+          VMRG=rg-cus-prod-stibo-app-1
+          ev="p"
+          SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr -d '[\r\n]')
+          ;;
+        ndr*)
+          VMRG=rg-eus2-nprod-perf-stibo-app-1
+          ev="f"
+          SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
           ;;
     esac
     if (( ${change_srv_name} )) ; then
         :
         # echo "server_name supplied in args"
         # echo "server name is .${server_name}."
+    elif [ ${ev} = "f" ] ; then
+        server_name="az3${ev}lepcmepc${srv_val}"
+        # echo "server name set to ${server_name}"
     else
         server_name="az1${ev}lepcmepc${srv_val}"
         # echo "server name set to ${server_name}"
@@ -81,7 +92,7 @@ function oazssh() {
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
-    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr --delete '[\r\n]')
+    
     az network bastion ssh --name ${BASTION} \
         --resource-group ${BASTIONRG} \
         --subscription "SharedServices" \
@@ -137,7 +148,7 @@ function oazssht() {
         esac
     done
     shift $((OPTIND-1))
-
+    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr -d '[\r\n]')
     case ${env_val} in
         d*)
             VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -156,20 +167,31 @@ function oazssht() {
           ev="x"
           ;;
         pe*)
- 	  VMRG=rg-cus-nprod-perf-stibo-app-1
-	  ev="r"
-	  ;;
+ 	      VMRG=rg-cus-nprod-perf-stibo-app-1
+	      ev="r"
+	      ;;
         au*)
           VMRG=rg-cus-nprod-devops-stibo-app-1
           ev="a"
           ;;
         pr*)
-            ;;
+          VMRG=rg-cus-prod-stibo-app-1
+          ev="p"
+          SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr -d '[\r\n]')
+          ;;
+        ndr*)
+          VMRG=rg-eus2-nprod-perf-stibo-app-1
+          ev="f"
+          SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
+          ;;
     esac
     if (( ${change_srv_name} )) ; then
-        :
+        
         # echo "server_name supplied in args"
         # echo "server name is .${server_name}."
+    elif [ ${ev} = "f"]  ; then
+        server_name="az3${ev}lepcmepc${srv_val}"
+        echo "server name set to ${server_name}"
     else
         server_name="az1${ev}lepcmepc${srv_val}"
         echo "server name set to ${server_name}"
@@ -179,7 +201,7 @@ function oazssht() {
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
-    SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr --delete '[\r\n]')
+
     set -x
     az network bastion tunnel --name ${BASTION} \
         --resource-group ${BASTIONRG} \
