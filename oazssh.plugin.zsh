@@ -1,5 +1,5 @@
 # Functions:
-export OAZSSH_VERSION="0.7.0"
+export OAZSSH_VERSION="0.7.1"
 
 # O'R:
 function oazssh() {
@@ -40,6 +40,9 @@ function oazssh() {
     done
     shift $((OPTIND-1))
     SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr -d '[\r\n]')
+    SUBSCRIPTIONNAME="SharedServices"
+    BASTION=bas-cus-ss-infra-bastion-1
+    BASTIONRG=rg-cus-ss-infra-network-1
     case ${env_val} in
         d*)
           VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -74,6 +77,9 @@ function oazssh() {
           VMRG=rg-eus2-nprod-perf-stibo-app-1
           ev="f"
           SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
+	  SUBSCRIPTIONNAME="DR-SharedServices"
+	  BASTION=bas-eus2-ss-infra-bastion-1
+	  BASTIONRG=rg-eus2-ss-infra-network-1
           ;;
     esac
     if (( ${change_srv_name} )) ; then
@@ -87,15 +93,13 @@ function oazssh() {
         server_name="az1${ev}lepcmepc${srv_val}"
         # echo "server name set to ${server_name}"
     fi
-    BASTION=bas-cus-ss-infra-bastion-1
-    BASTIONRG=rg-cus-ss-infra-network-1
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
     
     az network bastion ssh --name ${BASTION} \
         --resource-group ${BASTIONRG} \
-        --subscription "SharedServices" \
+        --subscription ${SUBSCRIPTIONNAME} \
         --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
         --auth-type ssh-key \
         --username adminuser \
@@ -149,6 +153,9 @@ function oazssht() {
     done
     shift $((OPTIND-1))
     SUBSCRIPTION=$(az account show --query 'id' --output tsv | tr -d '[\r\n]')
+    SUBSCRIPTIONNAME="SharedServices"
+    BASTION=bas-cus-ss-infra-bastion-1
+    BASTIONRG=rg-cus-ss-infra-network-1
     case ${env_val} in
         d*)
             VMRG=rg-cus-nprod-dev-stibo-app-1
@@ -183,6 +190,9 @@ function oazssht() {
           VMRG=rg-eus2-nprod-perf-stibo-app-1
           ev="f"
           SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
+	  SUBSCRIPTIONNAME="DR-SharedServices"
+	  BASTION=bas-eus2-ss-infra-bastion-1
+	  BASTIONRG=rg-eus2-ss-infra-network-1
           ;;
     esac
     if (( ${change_srv_name} )) ; then
@@ -196,8 +206,6 @@ function oazssht() {
         server_name="az1${ev}lepcmepc${srv_val}"
         echo "server name set to ${server_name}"
     fi
-    BASTION=bas-cus-ss-infra-bastion-1
-    BASTIONRG=rg-cus-ss-infra-network-1
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
@@ -205,7 +213,7 @@ function oazssht() {
     set -x
     az network bastion tunnel --name ${BASTION} \
         --resource-group ${BASTIONRG} \
-        --subscription "SharedServices" \
+        --subscription ${SUBSCRIPTIONNAME} \
         --target-resource-id /subscriptions/${SUBSCRIPTION}/resourceGroups/${VMRG}/providers/Microsoft.Compute/virtualMachines/${server_name} \
         --resource-port ${rport_val} \
         --port ${lport_val}
