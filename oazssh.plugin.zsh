@@ -1,9 +1,11 @@
-# Functions:
-export OAZSSH_VERSION="0.7.1"
+# vim: set tabstop=4 shiftwidth=4 expandtab softtabstop=4:
 
-# O'R:
+# Functions:
+export OAZSSH_VERSION="0.7.2"
+
+# azure ssh via azure bastion
 function oazssh() {
-    oazssh_usage() { 
+    oazssh_usage() {
         echo "Usage: oazssh [-v] [-e <env>] [-k keyfile] [-s srv || -S servername]" 1>&2; return
     }
 
@@ -77,16 +79,16 @@ function oazssh() {
           VMRG=rg-eus2-nprod-perf-stibo-app-1
           ev="f"
           SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
-	  SUBSCRIPTIONNAME="DR-SharedServices"
-	  BASTION=bas-eus2-ss-infra-bastion-1
-	  BASTIONRG=rg-eus2-ss-infra-network-1
+          SUBSCRIPTIONNAME="DR-SharedServices"
+          BASTION=bas-eus2-ss-infra-bastion-1
+          BASTIONRG=rg-eus2-ss-infra-network-1
           ;;
     esac
     if (( ${change_srv_name} )) ; then
         :
         # echo "server_name supplied in args"
         # echo "server name is .${server_name}."
-    elif [ ${ev} = "f" ] ; then
+    elif [ ${ev} = "f" ]; then
         server_name="az3${ev}lepcmepc${srv_val}"
         # echo "server name set to ${server_name}"
     else
@@ -96,7 +98,7 @@ function oazssh() {
     if (( ${VERBOSE} > 0 )); then
         set -x
     fi
-    
+
     az network bastion ssh --name ${BASTION} \
         --resource-group ${BASTIONRG} \
         --subscription ${SUBSCRIPTIONNAME} \
@@ -106,6 +108,7 @@ function oazssh() {
         --ssh-key ${key_val}
 }
 
+# azure ssh port forward via azure bastion
 function oazssht() {
     oazssht_usage() { 
         echo "Usage: oazssht [-e <env>] [-k keyfile] [-s srv || -S servername][ -w | -l]" 1>&2; 
@@ -170,36 +173,34 @@ function oazssht() {
             ev="q"
             ;;
         x*)
-          VMRG=rg-cus-nprod-infra-platform-1
-          ev="x"
-          ;;
+            VMRG=rg-cus-nprod-infra-platform-1
+            ev="x"
+            ;;
         pe*)
- 	      VMRG=rg-cus-nprod-perf-stibo-app-1
-	      ev="r"
-	      ;;
+            VMRG=rg-cus-nprod-perf-stibo-app-1
+            ev="r"
+            ;;
         au*)
-          VMRG=rg-cus-nprod-devops-stibo-app-1
-          ev="a"
-          ;;
+            VMRG=rg-cus-nprod-devops-stibo-app-1
+            ev="a"
+            ;;
         pr*)
-          VMRG=rg-cus-prod-stibo-app-1
-          ev="p"
-          SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr -d '[\r\n]')
-          ;;
+            VMRG=rg-cus-prod-stibo-app-1
+            ev="p"
+            SUBSCRIPTION=$(az account show --name "Prod" --query "id" --output tsv | tr -d '[\r\n]')
+            ;;
         ndr*)
-          VMRG=rg-eus2-nprod-perf-stibo-app-1
-          ev="f"
-          SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
-	  SUBSCRIPTIONNAME="DR-SharedServices"
-	  BASTION=bas-eus2-ss-infra-bastion-1
-	  BASTIONRG=rg-eus2-ss-infra-network-1
-          ;;
+            VMRG=rg-eus2-nprod-perf-stibo-app-1
+            ev="f"
+            SUBSCRIPTION=$(az account show --name "DR-Non-Prod" --query "id" --output tsv | tr -d '[\r\n]')
+            SUBSCRIPTIONNAME="DR-SharedServices"
+            BASTION=bas-eus2-ss-infra-bastion-1
+            BASTIONRG=rg-eus2-ss-infra-network-1
+            ;;
     esac
     if (( ${change_srv_name} )) ; then
-        
-        # echo "server_name supplied in args"
-        # echo "server name is .${server_name}."
-    elif [ ${ev} = "f"]  ; then
+        echo "server name is ${server_name}"
+    elif [ ${ev} = "f" ]; then
         server_name="az3${ev}lepcmepc${srv_val}"
         echo "server name set to ${server_name}"
     else
@@ -219,7 +220,7 @@ function oazssht() {
         --port ${lport_val}
 }
 
-# Nex Azure:
+# For Nexient Azure subscription
 function nazssh() {
    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
    az network bastion ssh --name ${AZENV}-bastion \
@@ -229,6 +230,7 @@ function nazssh() {
        --username adminuser \
        --ssh-key ~/.ssh/id_rsa
 }
+
 function nazssht() {
    SUBSCRIPTION=$(az account show --query 'id' --output tsv)
    az network bastion tunnel --name ${AZENV}-bastion \
